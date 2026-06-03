@@ -1,0 +1,44 @@
+package config
+
+import (
+	"time"
+
+	"github.com/FiyZou/handygo/database"
+	handylogger "github.com/FiyZou/handygo/logger"
+	"github.com/FiyZou/handygo/queue"
+	"github.com/FiyZou/handygo/scheduler"
+	"github.com/FiyZou/handygo/server"
+	"github.com/FiyZou/handygo/workerpool"
+)
+
+type AppConfig struct {
+	App      App                `mapstructure:"app"`
+	Server   server.Config      `mapstructure:"server"`
+	Logger   handylogger.Config `mapstructure:"logger"`
+	Database database.Config    `mapstructure:"database"`
+	Auth     Auth               `mapstructure:"auth"`
+	Worker   Worker             `mapstructure:"worker"`
+	Asynq    Asynq              `mapstructure:"asynq"`
+}
+
+type App struct {
+	Name string `mapstructure:"name"`
+}
+
+type Auth struct {
+	JWTSecret    string        `mapstructure:"jwtSecret"`
+	TokenTTL     time.Duration `mapstructure:"tokenTTL"`
+	PasswordCost int           `mapstructure:"passwordCost"`
+}
+
+type Worker struct {
+	Pool      workerpool.Config `mapstructure:"pool"`
+	Scheduler scheduler.Config  `mapstructure:"scheduler"`
+}
+
+type Asynq struct {
+	Enabled   bool                  `mapstructure:"enabled"`
+	Client    queue.ClientConfig    `mapstructure:"client"`
+	Server    queue.ServerConfig    `mapstructure:"server"`
+	Scheduler queue.SchedulerConfig `mapstructure:"scheduler"`
+}

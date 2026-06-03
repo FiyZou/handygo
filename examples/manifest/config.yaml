@@ -1,0 +1,67 @@
+app:
+  name: handygo-web
+
+server:
+  name: http
+  addr: ":8080"
+  mode: release
+  readTimeout: 5s
+  writeTimeout: 10s
+  idleTimeout: 60s
+
+logger:
+  level: info
+  mode: prod
+  encoding: json
+  outputPaths:
+    - stdout
+  errorOutputPaths:
+    - stderr
+
+database:
+  name: database
+  driver: sqlite
+  dsn: file:handygo-example.db?cache=shared
+  maxIdleConns: 2
+  maxOpenConns: 10
+  connMaxLifetime: 1h
+  logLevel: warn
+
+auth:
+  jwtSecret: "replace-this-secret-in-production"
+  tokenTTL: 24h
+  passwordCost: 10
+
+worker:
+  pool:
+    name: local-worker-pool
+    workers: 4
+    queue: 64
+  scheduler:
+    name: local-scheduler
+    location: Asia/Shanghai
+    seconds: false
+
+asynq:
+  enabled: false
+  client:
+    name: asynq-client
+    redis:
+      addr: "127.0.0.1:6379"
+      db: 0
+  server:
+    name: asynq-server
+    concurrency: 10
+    queues:
+      critical: 6
+      default: 3
+      low: 1
+    redis:
+      addr: "127.0.0.1:6379"
+      db: 0
+  scheduler:
+    name: asynq-scheduler
+    location: Asia/Shanghai
+    redis:
+      addr: "127.0.0.1:6379"
+      db: 0
