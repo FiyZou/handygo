@@ -13,6 +13,29 @@ HandyGo is a reusable Go web foundation package. It wraps popular production lib
 - Health checks, unified JSON responses, and example web service wiring.
 - Safe goroutine helpers, worker pools, local schedulers, and Asynq based background queues.
 
+## Scaffold CLI
+
+HandyGo also ships a project scaffold CLI:
+
+```bash
+go install github.com/FiyZou/handygo/cmd/handygo@latest
+handygo new myapp --module github.com/you/myapp
+```
+
+The generated project includes both the runnable web scaffold and a default collaboration workspace:
+
+- `AGENTS.md`: global engineering and handoff rules
+- `docs/handoff.md`: current role handoff state
+- `docs/tasks.md`: backlog, in-progress, and done items
+- `docs/decision-log.md`: architectural and public-contract decisions
+- `docs/product/PRD.md`: product requirements
+- `docs/tech/ARCHITECTURE.md`: system design notes
+- `docs/review/`: review outputs
+- `docs/qa/`: QA planning and verification notes
+- `.codex/agents/`: project-local specialist agent prompts
+
+This is the stage-three scaffold: a new project starts with both code structure and collaboration memory, so PM, Architect, Developer, and Reviewer can work against the same local source of truth.
+
 ## Quick Start
 
 ```go
@@ -43,3 +66,5 @@ srv.Register(func(r *gin.Engine) {
 ```
 
 See `examples` for a complete composition example.
+
+See [examples/README.md](examples/README.md) for the generated project layout and workflow details.

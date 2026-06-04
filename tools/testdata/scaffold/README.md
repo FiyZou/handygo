@@ -13,12 +13,43 @@ make dev
 
 `make dev` uses `manifest/config.local.yaml`, starts the server in debug mode, and creates a local SQLite database on first run.
 
+## AI Collaboration
+
+The scaffold includes a lightweight collaboration memory for CLI agents and human review:
+
+- `AGENTS.md`: global engineering and handoff rules
+- `docs/handoff.md`: current role handoff summary
+- `docs/decision-log.md`: architecture and technical decisions
+- `docs/tasks.md`: active and upcoming work
+- `docs/product/PRD.md`: product requirements
+- `docs/tech/ARCHITECTURE.md`: system design notes
+- `docs/review/`: review artifacts
+- `docs/qa/`: QA artifacts
+- `.codex/agents/`: project-local Codex agent notes and starter specialist agents
+
+## First Collaboration Loop
+
+For a fresh project, use this default loop:
+
+1. Read `AGENTS.md`, `docs/handoff.md`, `docs/tasks.md`, and `docs/decision-log.md`.
+2. PM refines `docs/product/PRD.md`.
+3. Architect updates `docs/tech/ARCHITECTURE.md` and records decisions in `docs/decision-log.md`.
+4. Developer implements the scoped change and keeps `docs/tasks.md` and `docs/handoff.md` current.
+5. Reviewer writes findings to `docs/review/quality-report.md` and QA follow-up to `docs/qa/`.
+
 ## Structure
 
 - `main.go`: application entrypoint. It embeds `manifest/config.yaml` into the binary.
+- `api/.../v1`: request and response DTOs. This is the transport contract layer, not the handler/controller layer.
 - `manifest/config.yaml`: embedded build-time configuration.
 - `manifest/config.local.yaml`: editable local development configuration.
 - `manifest/gen.yaml`: database-to-model generation configuration.
+- `docs`: collaboration memory, decisions, handoffs, and QA/review notes.
+- `.codex/agents`: project-local agent instructions and conventions.
+- `.codex/agents/gorm-expert.md`: data access and transaction guardrails.
+- `.codex/agents/gin-architect.md`: HTTP layering and API boundary guardrails.
+- `.codex/agents/api-designer.md`: API contract design guardrails.
+- `.codex/agents/quality-gate.md`: quality report checklist and output rules.
 - `internal/bootstrap`: dependency wiring, migration, seed data, server registration.
 - `internal/config`: typed application configuration.
 - `internal/model`: Gorm models for users, roles, permissions, and join tables.
@@ -29,6 +60,15 @@ make dev
 - `internal/http/middleware`: JWT authentication and permission checks.
 - `internal/http/router`: route grouping and permission binding.
 - `internal/tasks`: Asynq task definitions and handlers.
+
+## Structure Conventions
+
+- `api/.../v1` defines request and response DTOs.
+- `internal/http/...` is the current HTTP boundary: handlers, middleware, and routing.
+- `manifest/` is the active config directory for both runtime config and model generation. Treat it as the current equivalent of a future `configs/` directory.
+- The scaffold may evolve toward `cmd/`, `internal/api`, and `configs/`, but the current generated layout is the source of truth until the CLI and templates are migrated together.
+- QA planning defaults live in `docs/qa/test_cases.md`.
+- Quality gate output defaults live in `docs/review/quality-report.md`.
 
 ## Routes
 

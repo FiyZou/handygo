@@ -1,6 +1,110 @@
-# AI Development Rules
+# Global Rules
 
-This project is expected to be developed with Codex or other CLI coding agents. Follow these rules for every generated change.
+This project is expected to be developed with Codex or other CLI coding agents. All roles must follow these rules for every generated change.
+
+## Workflow
+
+Work in the smallest useful role chain first:
+
+```text
+PM
+↓
+Architect
+↓
+Developer
+↓
+Reviewer
+```
+
+Expand to more specialized roles only when the project actually needs them.
+
+## Mandatory Startup Reads
+
+Before starting work, every role must read:
+
+1. `docs/handoff.md`
+2. `docs/tasks.md`
+3. `docs/decision-log.md`
+4. The role-specific source of truth it is about to change:
+   - product work: `docs/product/PRD.md`
+   - technical design: `docs/tech/ARCHITECTURE.md`
+   - review output: `docs/review/`
+   - QA output: `docs/qa/`
+
+## Collaboration Rules
+
+1. Prefer reusing existing code and existing decisions before creating new structure.
+2. Do not modify unrelated modules.
+3. Do not perform large refactors unless the task explicitly requires them.
+4. Every technical decision that changes architecture, data flow, infra, auth, storage, or public contracts must be recorded in `docs/decision-log.md`.
+5. Every completed handoff must update `docs/handoff.md`.
+6. Keep task status current in `docs/tasks.md`.
+
+## Structure Semantics
+
+- `api/.../v1` is the DTO layer for request and response contracts.
+- `internal/http/...` is the active handler, middleware, and routing layer.
+- `manifest/` is the active config directory and should be treated as the current `configs/` equivalent.
+- Do not rename `main.go`, `manifest/`, or `internal/http/...` just to match a future target layout unless the change is explicitly planned across CLI, docs, and scaffold verification.
+
+## Specialized Agents
+
+Project-local starter agents live in `.codex/agents/`.
+
+- `gin-architect.md`: controller and routing discipline
+- `gorm-expert.md`: context, transactions, pagination, and DB access discipline
+- `api-designer.md`: API contract and response discipline
+- `quality-gate.md`: quality checklist and review output discipline
+
+## Handoff Contract
+
+Every handoff must include:
+
+- current role
+- completed work
+- touched files
+- next role
+- next tasks
+- risks
+- acceptance criteria
+
+Use this format:
+
+```markdown
+## Current Role
+
+Architect
+
+## Completed
+
+- Completed user model design
+- Completed auth scheme design
+
+## Files
+
+- docs/tech/ARCHITECTURE.md
+
+## Next Role
+
+Developer
+
+## Next Tasks
+
+- Implement register
+- Implement login
+
+## Risks
+
+- Email verification flow not decided
+
+## Acceptance
+
+- Register succeeds
+- Login succeeds
+- JWT is issued correctly
+```
+
+## Engineering Rules
 
 ## 1. Reuse Before Creating
 

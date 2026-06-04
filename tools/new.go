@@ -12,7 +12,7 @@ import (
 
 const scaffoldSourceModule = "github.com/FiyZou/handygo/examples"
 
-//go:embed testdata/scaffold/**
+//go:embed all:testdata/scaffold/**
 var scaffoldFS embed.FS
 
 type ProjectNewOptions struct {
@@ -50,12 +50,19 @@ func NewProject(opts ProjectNewOptions) error {
 	}
 
 	fmt.Printf("Created HandyGo project in %s\n", targetDir)
+	fmt.Println("Collaboration workspace initialized:")
+	fmt.Println("  AGENTS.md")
+	fmt.Println("  docs/handoff.md")
+	fmt.Println("  docs/tasks.md")
+	fmt.Println("  docs/decision-log.md")
+	fmt.Println("  .codex/agents/")
 	fmt.Println("Next steps:")
 	fmt.Printf("  cd %s\n", projectName)
 	fmt.Println("  make install-tools")
 	fmt.Println("  go mod tidy")
 	fmt.Println("  make generate")
 	fmt.Println("  make dev")
+	fmt.Println("Start by reading AGENTS.md and docs/handoff.md.")
 	return nil
 }
 
