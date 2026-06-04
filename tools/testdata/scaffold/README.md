@@ -1,24 +1,10 @@
-# HandyGo Web Scaffold
+# HandyGo Web App
 
-This example is a copy-ready Web project scaffold built on HandyGo, Gin, Gorm, Zap, and Viper.
+This project was created with HandyGo. It is built on HandyGo, Gin, Gorm, Zap, and Viper.
 
 ## Quick Start
 
-Create a new project from this scaffold:
-
 ```bash
-go install github.com/FiyZou/handygo/cmd/handygo@latest
-handygo new myapp --module github.com/you/myapp
-cd myapp
-go mod tidy
-make generate
-make dev
-```
-
-Run this repository's example directly:
-
-```bash
-cd examples
 make install-tools
 go mod tidy
 make generate
@@ -83,7 +69,6 @@ The scaffold demonstrates HandyGo's background infrastructure:
 ## Run
 
 ```bash
-cd examples
 make dev
 ```
 
@@ -92,7 +77,6 @@ Use `APP_CONFIG=/path/to/config.yaml go run .` for production-like runs. The emb
 ## Generate Models
 
 ```bash
-cd examples
 make generate
 ```
 
@@ -107,7 +91,6 @@ handygo gen model -c manifest/gen.yaml
 ## Build
 
 ```bash
-cd examples
 make build
 ./handygo-example
 ```

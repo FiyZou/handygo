@@ -1,18 +1,18 @@
 app:
-  name: handygo-web
+  name: handygo-web-local
 
 server:
   name: http
   addr: ":8080"
-  mode: release
+  mode: debug
   readTimeout: 5s
   writeTimeout: 10s
   idleTimeout: 60s
 
 logger:
-  level: info
-  mode: prod
-  encoding: json
+  level: debug
+  mode: dev
+  encoding: console
   outputPaths:
     - stdout
   errorOutputPaths:
@@ -25,10 +25,10 @@ database:
   maxIdleConns: 2
   maxOpenConns: 10
   connMaxLifetime: 1h
-  logLevel: warn
+  logLevel: info
 
 auth:
-  jwtSecret: ""
+  jwtSecret: "replace-this-secret-in-production"
   tokenTTL: 24h
   passwordCost: 10
 

@@ -1,0 +1,13 @@
+database:
+  driver: sqlite
+  dsn: "file:handygo-gen?mode=memory&cache=shared"
+
+generate:
+  modelPath: internal/model
+  autoMigrateDemo: true
+  nullable: false
+  coverable: false
+  signable: true
+  indexTag: true
+  typeTag: true
+  defaultTag: true
