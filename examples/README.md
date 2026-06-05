@@ -10,10 +10,11 @@ Create a new project from this scaffold:
 go install github.com/FiyZou/handygo/cmd/handygo@latest
 handygo new myapp --module github.com/you/myapp
 cd myapp
-go mod tidy
 make generate
 make dev
 ```
+
+`handygo new` runs `go mod tidy` by default. Use `--skip-tidy` for offline or scripted runs.
 
 Run this repository's example directly:
 

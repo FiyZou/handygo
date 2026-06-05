@@ -22,6 +22,8 @@ go install github.com/FiyZou/handygo/cmd/handygo@latest
 handygo new myapp --module github.com/you/myapp
 ```
 
+`handygo new` runs `go mod tidy` in the created project by default. Use `--skip-tidy` for offline or scripted runs.
+
 The generated project includes both the runnable web scaffold and a default collaboration workspace:
 
 - `AGENTS.md`: global engineering and handoff rules

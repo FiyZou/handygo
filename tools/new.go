@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -26,7 +27,11 @@ type ProjectNewOptions struct {
 	FrontendStyleSkill string
 	Stdin              io.Reader
 	Stdout             io.Writer
+	SkipTidy           bool
+	CommandRunner      CommandRunner
 }
+
+type CommandRunner func(dir string, name string, args ...string) error
 
 func NewProject(opts ProjectNewOptions) error {
 	stdout := opts.Stdout
@@ -66,6 +71,12 @@ func NewProject(opts ProjectNewOptions) error {
 	if err := writeCollaborationConfig(targetDir, frontendCfg); err != nil {
 		return err
 	}
+	if !opts.SkipTidy {
+		fmt.Fprintln(stdout, "Running go mod tidy...")
+		if err := runProjectCommand(opts.CommandRunner, targetDir, "go", "mod", "tidy"); err != nil {
+			return fmt.Errorf("go mod tidy: %w", err)
+		}
+	}
 
 	fmt.Fprintf(stdout, "Created HandyGo project in %s\n", targetDir)
 	fmt.Fprintln(stdout, "Collaboration workspace initialized:")
@@ -81,11 +92,21 @@ func NewProject(opts ProjectNewOptions) error {
 	fmt.Fprintln(stdout, "Next steps:")
 	fmt.Fprintf(stdout, "  cd %s\n", projectName)
 	fmt.Fprintln(stdout, "  make install-tools")
-	fmt.Fprintln(stdout, "  go mod tidy")
 	fmt.Fprintln(stdout, "  make generate")
 	fmt.Fprintln(stdout, "  make dev")
 	fmt.Fprintln(stdout, "The collaboration runner will maintain PRD, architecture, tasks, handoff, review, and QA notes.")
 	return nil
+}
+
+func runProjectCommand(runner CommandRunner, dir string, name string, args ...string) error {
+	if runner != nil {
+		return runner(dir, name, args...)
+	}
+	cmd := exec.Command(name, args...)
+	cmd.Dir = dir
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }
 
 type frontendConfig struct {

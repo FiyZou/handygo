@@ -47,6 +47,7 @@ func newNewCommand() *cobra.Command {
 	var frontend bool
 	var noFrontend bool
 	var frontendStyleSkill string
+	var skipTidy bool
 	cmd := &cobra.Command{
 		Use:   "new <projectName>",
 		Short: "Create a new HandyGo project",
@@ -67,6 +68,7 @@ func newNewCommand() *cobra.Command {
 				Interactive:        frontendOpt == nil && isTerminalInput(),
 				Frontend:           frontendOpt,
 				FrontendStyleSkill: frontendStyleSkill,
+				SkipTidy:           skipTidy,
 			})
 		},
 	}
@@ -75,6 +77,7 @@ func newNewCommand() *cobra.Command {
 	cmd.Flags().BoolVar(&frontend, "frontend", false, "enable frontend agent workflow")
 	cmd.Flags().BoolVar(&noFrontend, "no-frontend", false, "disable frontend agent workflow")
 	cmd.Flags().StringVar(&frontendStyleSkill, "frontend-style-skill", "", "default frontend style skill name")
+	cmd.Flags().BoolVar(&skipTidy, "skip-tidy", false, "skip running go mod tidy after project creation")
 	return cmd
 }
 

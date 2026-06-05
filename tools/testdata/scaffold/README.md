@@ -6,10 +6,11 @@ This project was created with HandyGo. It is built on HandyGo, Gin, Gorm, Zap, a
 
 ```bash
 make install-tools
-go mod tidy
 make generate
 make dev
 ```
+
+`handygo new` runs `go mod tidy` by default. Use `--skip-tidy` for offline or scripted runs.
 
 `make dev` uses `manifest/config.local.yaml`, starts the server in debug mode, and creates a local SQLite database on first run.
 

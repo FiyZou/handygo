@@ -2,6 +2,7 @@ package tools
 
 import (
 	"bytes"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -21,10 +22,18 @@ func TestNewProjectCopiesCollaborationFiles(t *testing.T) {
 		t.Fatalf("change directory: %v", err)
 	}
 
+	var tidyCalls []string
 	output := captureStdout(t, func() {
 		if err := NewProject(ProjectNewOptions{
 			ProjectName: "demoapp",
 			ModulePath:  "example.com/demoapp",
+			CommandRunner: func(dir string, name string, args ...string) error {
+				tidyCalls = append(tidyCalls, strings.Join(append([]string{name}, args...), " "))
+				if !strings.HasSuffix(dir, "demoapp") {
+					t.Fatalf("go mod tidy dir = %q", dir)
+				}
+				return nil
+			},
 		}); err != nil {
 			t.Fatalf("new project: %v", err)
 		}
@@ -37,12 +46,16 @@ func TestNewProjectCopiesCollaborationFiles(t *testing.T) {
 		"docs/ai-collaboration.md",
 		"docs/collaboration-config.yaml",
 		".codex/agents/",
+		"Running go mod tidy...",
 		"Tell the agent your goal",
 		"The collaboration runner will maintain PRD, architecture, tasks, handoff, review, and QA notes.",
 	} {
 		if !strings.Contains(output, snippet) {
 			t.Fatalf("stdout missing %q:\n%s", snippet, output)
 		}
+	}
+	if len(tidyCalls) != 1 || tidyCalls[0] != "go mod tidy" {
+		t.Fatalf("go mod tidy calls = %#v", tidyCalls)
 	}
 
 	projectRoot := filepath.Join(root, "demoapp")
@@ -188,6 +201,7 @@ func TestNewProjectWritesFrontendCollaborationConfig(t *testing.T) {
 		Frontend:           &enabled,
 		FrontendStyleSkill: "my-ui-style",
 		Stdout:             &stdout,
+		SkipTidy:           true,
 	}); err != nil {
 		t.Fatalf("new project: %v", err)
 	}
@@ -229,6 +243,7 @@ func TestNewProjectPromptsForFrontendWorkflow(t *testing.T) {
 		Interactive: true,
 		Stdin:       strings.NewReader("y\nprompt-style\n"),
 		Stdout:      &stdout,
+		SkipTidy:    true,
 	}); err != nil {
 		t.Fatalf("new project: %v", err)
 	}
@@ -247,6 +262,37 @@ func TestNewProjectPromptsForFrontendWorkflow(t *testing.T) {
 		if !strings.Contains(stdout.String(), snippet) {
 			t.Fatalf("stdout missing %q:\n%s", snippet, stdout.String())
 		}
+	}
+}
+
+func TestNewProjectCanSkipGoModTidy(t *testing.T) {
+	root := t.TempDir()
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("get working directory: %v", err)
+	}
+	t.Cleanup(func() {
+		_ = os.Chdir(wd)
+	})
+	if err := os.Chdir(root); err != nil {
+		t.Fatalf("change directory: %v", err)
+	}
+
+	called := false
+	if err := NewProject(ProjectNewOptions{
+		ProjectName: "skipapp",
+		ModulePath:  "example.com/skipapp",
+		SkipTidy:    true,
+		CommandRunner: func(dir string, name string, args ...string) error {
+			called = true
+			return nil
+		},
+		Stdout: io.Discard,
+	}); err != nil {
+		t.Fatalf("new project: %v", err)
+	}
+	if called {
+		t.Fatal("expected go mod tidy to be skipped")
 	}
 }
 
