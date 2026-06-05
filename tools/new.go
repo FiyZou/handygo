@@ -53,16 +53,18 @@ func NewProject(opts ProjectNewOptions) error {
 	fmt.Println("Collaboration workspace initialized:")
 	fmt.Println("  AGENTS.md")
 	fmt.Println("  docs/handoff.md")
+	fmt.Println("  docs/ai-collaboration.md")
 	fmt.Println("  docs/tasks.md")
 	fmt.Println("  docs/decision-log.md")
 	fmt.Println("  .codex/agents/")
+	fmt.Println("Tell the agent your goal, for example: \"实现注册登录\".")
 	fmt.Println("Next steps:")
 	fmt.Printf("  cd %s\n", projectName)
 	fmt.Println("  make install-tools")
 	fmt.Println("  go mod tidy")
 	fmt.Println("  make generate")
 	fmt.Println("  make dev")
-	fmt.Println("Start by reading AGENTS.md and docs/handoff.md.")
+	fmt.Println("The collaboration runner will maintain PRD, architecture, tasks, handoff, review, and QA notes.")
 	return nil
 }
 

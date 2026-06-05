@@ -2,32 +2,34 @@
 
 ## Current Role
 
-PM
+Collaboration Runner
 
 ## Completed
 
-- Initialized project collaboration workflow
+- Initialized automatic collaboration workspace
 
 ## Files
 
 - AGENTS.md
 - docs/handoff.md
+- docs/tasks.md
+- .codex/agents/
 
 ## Next Role
 
-Architect
+PM
 
 ## Next Tasks
 
-- Review `docs/product/PRD.md`
-- Draft the first version of `docs/tech/ARCHITECTURE.md`
-- Record major technical choices in `docs/decision-log.md`
+- Wait for the user's goal
+- Run PM -> Architect -> Developer -> Reviewer automatically
+- Keep collaboration documents current during the loop
 
 ## Risks
 
-- Product scope may still be incomplete
+- No user goal has been provided yet
 
 ## Acceptance
 
-- Architecture decisions are documented
-- Next implementation scope is clear
+- The user only needs to describe the desired outcome
+- Agents maintain PRD, architecture, tasks, decisions, handoff, review, and QA notes

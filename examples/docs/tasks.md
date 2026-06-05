@@ -2,13 +2,14 @@
 
 ## Backlog
 
-- Refine the PRD for the first business workflow
-- Define the initial backend API scope
+- Wait for the first user goal
+- Convert the goal into a PM -> Architect -> Developer -> Reviewer loop
 
 ## In Progress
 
-- Initialize collaboration and handoff workflow
+- None
 
 ## Done
 
 - Created project scaffold
+- Initialized automatic collaboration workspace

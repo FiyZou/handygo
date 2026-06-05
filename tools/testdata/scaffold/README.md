@@ -15,9 +15,11 @@ make dev
 
 ## AI Collaboration
 
-The scaffold includes a lightweight collaboration memory for CLI agents and human review:
+The scaffold includes an automatic collaboration workspace for CLI agents and human review. Users describe the goal; agents maintain the collaboration documents and role handoffs.
 
 - `AGENTS.md`: global engineering and handoff rules
+- `.codex/agents/collaboration-runner.md`: default entrypoint for user goals
+- `docs/ai-collaboration.md`: bilingual usage guide for the closed-loop workflow
 - `docs/handoff.md`: current role handoff summary
 - `docs/decision-log.md`: architecture and technical decisions
 - `docs/tasks.md`: active and upcoming work
@@ -27,15 +29,20 @@ The scaffold includes a lightweight collaboration memory for CLI agents and huma
 - `docs/qa/`: QA artifacts
 - `.codex/agents/`: project-local Codex agent notes and starter specialist agents
 
-## First Collaboration Loop
+## User Goal Flow
 
-For a fresh project, use this default loop:
+For a fresh project, tell the agent the desired outcome:
 
-1. Read `AGENTS.md`, `docs/handoff.md`, `docs/tasks.md`, and `docs/decision-log.md`.
-2. PM refines `docs/product/PRD.md`.
-3. Architect updates `docs/tech/ARCHITECTURE.md` and records decisions in `docs/decision-log.md`.
-4. Developer implements the scoped change and keeps `docs/tasks.md` and `docs/handoff.md` current.
-5. Reviewer writes findings to `docs/review/quality-report.md` and QA follow-up to `docs/qa/`.
+```text
+实现注册登录
+```
+
+The collaboration runner handles the rest:
+
+1. PM scopes the goal and updates `docs/product/PRD.md`, `docs/tasks.md`, and `docs/handoff.md`.
+2. Architect updates `docs/tech/ARCHITECTURE.md`, records decisions, and hands off to Developer.
+3. Developer implements the scoped change, tests it, and updates task and handoff state.
+4. Reviewer writes `docs/review/quality-report.md`, updates QA notes when needed, and closes or continues the handoff.
 
 ## Structure
 
@@ -45,7 +52,9 @@ For a fresh project, use this default loop:
 - `manifest/config.local.yaml`: editable local development configuration.
 - `manifest/gen.yaml`: database-to-model generation configuration.
 - `docs`: collaboration memory, decisions, handoffs, and QA/review notes.
+- `docs/ai-collaboration.md`: English and Chinese guide for user-facing agent collaboration.
 - `.codex/agents`: project-local agent instructions and conventions.
+- `.codex/agents/collaboration-runner.md`: automatic PM -> Architect -> Developer -> Reviewer coordinator.
 - `.codex/agents/gorm-expert.md`: data access and transaction guardrails.
 - `.codex/agents/gin-architect.md`: HTTP layering and API boundary guardrails.
 - `.codex/agents/api-designer.md`: API contract design guardrails.

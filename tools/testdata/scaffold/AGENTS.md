@@ -4,9 +4,15 @@ This project is expected to be developed with Codex or other CLI coding agents. 
 
 ## Workflow
 
-Work in the smallest useful role chain first:
+Users should only describe the goal. Agents must run the collaboration workflow, update collaboration files, implement the scoped work, and report the result.
+
+Default workflow:
 
 ```text
+User Goal
+↓
+collaboration-runner
+↓
 PM
 ↓
 Architect
@@ -17,6 +23,17 @@ Reviewer
 ```
 
 Expand to more specialized roles only when the project actually needs them.
+
+## Automatic Collaboration Protocol
+
+1. Do not ask users to manually edit `docs/product/PRD.md`, `docs/tech/ARCHITECTURE.md`, `docs/tasks.md`, `docs/handoff.md`, `docs/decision-log.md`, `docs/review/`, or `docs/qa/`.
+2. When the user provides a goal, the active agent must behave as `.codex/agents/collaboration-runner.md` unless the user explicitly selects another role.
+3. The runner must read `docs/handoff.md`, `docs/tasks.md`, `docs/decision-log.md`, and the relevant role source files before changing code.
+4. The runner must execute the smallest useful role chain: PM -> Architect -> Developer -> Reviewer.
+5. Each role must update its owned documents before handing off to the next role.
+6. If `docs/handoff.md` already describes unfinished work, resume from that handoff before starting a new role chain.
+7. Ask the user only when the goal is too ambiguous to scope safely or when a high-impact product or technical tradeoff cannot be inferred from existing project context.
+8. A task is not complete until code, tests, task status, handoff, and review output are aligned.
 
 ## Mandatory Startup Reads
 

@@ -34,8 +34,10 @@ func TestNewProjectCopiesCollaborationFiles(t *testing.T) {
 		"Collaboration workspace initialized:",
 		"AGENTS.md",
 		"docs/handoff.md",
+		"docs/ai-collaboration.md",
 		".codex/agents/",
-		"Start by reading AGENTS.md and docs/handoff.md.",
+		"Tell the agent your goal",
+		"The collaboration runner will maintain PRD, architecture, tasks, handoff, review, and QA notes.",
 	} {
 		if !strings.Contains(output, snippet) {
 			t.Fatalf("stdout missing %q:\n%s", snippet, output)
@@ -45,11 +47,16 @@ func TestNewProjectCopiesCollaborationFiles(t *testing.T) {
 	projectRoot := filepath.Join(root, "demoapp")
 	wantFiles := []string{
 		"AGENTS.md",
+		".codex/agents/collaboration-runner.md",
+		".codex/agents/pm.md",
+		".codex/agents/architect.md",
+		".codex/agents/developer.md",
 		".codex/agents/api-designer.md",
 		".codex/agents/gin-architect.md",
 		".codex/agents/gorm-expert.md",
 		".codex/agents/quality-gate.md",
 		"docs/handoff.md",
+		"docs/ai-collaboration.md",
 		"docs/decision-log.md",
 		"docs/tasks.md",
 		"docs/product/PRD.md",
@@ -72,6 +79,35 @@ func TestNewProjectCopiesCollaborationFiles(t *testing.T) {
 	}
 	if !strings.Contains(string(goMod), "module example.com/demoapp") {
 		t.Fatalf("go.mod does not contain target module path:\n%s", string(goMod))
+	}
+
+	agents, err := os.ReadFile(filepath.Join(projectRoot, "AGENTS.md"))
+	if err != nil {
+		t.Fatalf("read AGENTS.md: %v", err)
+	}
+	for _, snippet := range []string{
+		"Users should only describe the goal",
+		"Automatic Collaboration Protocol",
+		"collaboration-runner.md",
+	} {
+		if !strings.Contains(string(agents), snippet) {
+			t.Fatalf("AGENTS.md missing %q:\n%s", snippet, string(agents))
+		}
+	}
+
+	guide, err := os.ReadFile(filepath.Join(projectRoot, "docs/ai-collaboration.md"))
+	if err != nil {
+		t.Fatalf("read docs/ai-collaboration.md: %v", err)
+	}
+	for _, snippet := range []string{
+		"AI Collaboration Guide / AI 协作使用指南",
+		"Implement registration and login",
+		"实现注册登录",
+		"PM -> Architect -> Developer -> Reviewer",
+	} {
+		if !strings.Contains(string(guide), snippet) {
+			t.Fatalf("docs/ai-collaboration.md missing %q:\n%s", snippet, string(guide))
+		}
 	}
 }
 
