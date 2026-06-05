@@ -41,6 +41,20 @@ Continue
 
 The agent should read `docs/handoff.md` and resume from the current role.
 
+## Frontend Workflow
+
+Frontend workflow is optional and disabled by default.
+
+Enable it during `handygo new`, or later in `docs/collaboration-config.yaml`.
+
+```yaml
+frontend:
+  enabled: false
+  styleSkill: ""
+```
+
+When `frontend.enabled` is false, agents should not create or modify frontend files unless the current user request explicitly asks for frontend work. When `styleSkill` is set, frontend work should use that style skill unless the user specifies another one in the current request.
+
 ## 中文
 
 本项目包含一个闭环的 agent 协作流程。作为使用者，你只需要描述目标，项目记忆、角色流转和协作文档都由 agent 自动维护。
@@ -77,3 +91,17 @@ agent 会负责：
 ```
 
 agent 应该读取 `docs/handoff.md`，并从当前角色继续推进。
+
+## 前端工作流
+
+前端工作流是可选能力，默认关闭。
+
+可以在 `handygo new` 创建项目时启用，也可以稍后在 `docs/collaboration-config.yaml` 中修改。
+
+```yaml
+frontend:
+  enabled: false
+  styleSkill: ""
+```
+
+当 `frontend.enabled` 为 false 时，除非当前用户请求明确要求前端工作，否则 agent 不应该创建或修改前端文件。当 `styleSkill` 有值时，前端实现应默认使用该风格 skill；如果用户本次请求指定了其他 skill，则优先使用用户指定的 skill。

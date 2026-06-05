@@ -27,6 +27,7 @@ The generated project includes both the runnable web scaffold and a default coll
 - `AGENTS.md`: global engineering and handoff rules
 - `.codex/agents/collaboration-runner.md`: default agent entrypoint for user goals
 - `docs/ai-collaboration.md`: bilingual user guide for the closed-loop agent workflow
+- `docs/collaboration-config.yaml`: optional frontend workflow and style skill settings
 - `docs/handoff.md`: current role handoff state
 - `docs/tasks.md`: backlog, in-progress, and done items
 - `docs/decision-log.md`: architectural and public-contract decisions
@@ -37,6 +38,8 @@ The generated project includes both the runnable web scaffold and a default coll
 - `.codex/agents/`: project-local specialist agent prompts
 
 This is the stage-three scaffold: users describe the desired outcome, and the collaboration runner advances PM, Architect, Developer, and Reviewer roles while maintaining PRD, architecture, tasks, decisions, handoff, review, and QA notes.
+
+Frontend agent workflow is optional and disabled by default. Enable it during `handygo new` with `--frontend --frontend-style-skill <skill>` or later in `docs/collaboration-config.yaml`.
 
 ## Quick Start
 

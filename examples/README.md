@@ -34,6 +34,7 @@ The scaffold includes an automatic collaboration workspace for CLI agents and hu
 - `AGENTS.md`: global engineering and handoff rules
 - `.codex/agents/collaboration-runner.md`: default entrypoint for user goals
 - `docs/ai-collaboration.md`: bilingual usage guide for the closed-loop workflow
+- `docs/collaboration-config.yaml`: optional frontend workflow and style skill settings
 - `docs/handoff.md`: current role handoff summary
 - `docs/decision-log.md`: architecture and technical decisions
 - `docs/tasks.md`: active and upcoming work
@@ -58,6 +59,10 @@ The collaboration runner handles the rest:
 3. Developer implements the scoped change, tests it, and updates task and handoff state.
 4. Reviewer writes `docs/review/quality-report.md`, updates QA notes when needed, and closes or continues the handoff.
 
+Frontend agent workflow is optional and disabled by default. Enable it during `handygo new` or later in `docs/collaboration-config.yaml`.
+
+前端 Agent 工作流是可选能力，默认关闭。可在 `handygo new` 创建项目时启用，也可稍后在 `docs/collaboration-config.yaml` 中开启。
+
 ## Structure
 
 - `main.go`: application entrypoint. It embeds `manifest/config.yaml` into the binary.
@@ -67,6 +72,7 @@ The collaboration runner handles the rest:
 - `manifest/gen.yaml`: database-to-model generation configuration.
 - `docs`: collaboration memory, decisions, handoffs, and QA/review notes.
 - `docs/ai-collaboration.md`: English and Chinese guide for user-facing agent collaboration.
+- `docs/collaboration-config.yaml`: frontend workflow and default style skill settings.
 - `.codex/agents`: project-local agent instructions and conventions.
 - `.codex/agents/collaboration-runner.md`: automatic PM -> Architect -> Developer -> Reviewer coordinator.
 - `.codex/agents/gorm-expert.md`: data access and transaction guardrails.

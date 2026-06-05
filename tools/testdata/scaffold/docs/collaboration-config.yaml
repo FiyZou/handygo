@@ -1,0 +1,9 @@
+# Collaboration Config / 协作配置
+frontend:
+  # Enable frontend agent workflow.
+  # 是否启用前端 Agent 工作流。
+  enabled: false
+
+  # Default frontend style skill. Leave empty to use existing project style.
+  # 默认前端风格 skill。留空时使用项目已有风格。
+  styleSkill: ""

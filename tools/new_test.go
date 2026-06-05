@@ -35,6 +35,7 @@ func TestNewProjectCopiesCollaborationFiles(t *testing.T) {
 		"AGENTS.md",
 		"docs/handoff.md",
 		"docs/ai-collaboration.md",
+		"docs/collaboration-config.yaml",
 		".codex/agents/",
 		"Tell the agent your goal",
 		"The collaboration runner will maintain PRD, architecture, tasks, handoff, review, and QA notes.",
@@ -57,6 +58,7 @@ func TestNewProjectCopiesCollaborationFiles(t *testing.T) {
 		".codex/agents/quality-gate.md",
 		"docs/handoff.md",
 		"docs/ai-collaboration.md",
+		"docs/collaboration-config.yaml",
 		"docs/decision-log.md",
 		"docs/tasks.md",
 		"docs/product/PRD.md",
@@ -89,6 +91,7 @@ func TestNewProjectCopiesCollaborationFiles(t *testing.T) {
 		"Users should only describe the goal",
 		"Automatic Collaboration Protocol",
 		"collaboration-runner.md",
+		"docs/collaboration-config.yaml",
 	} {
 		if !strings.Contains(string(agents), snippet) {
 			t.Fatalf("AGENTS.md missing %q:\n%s", snippet, string(agents))
@@ -104,6 +107,8 @@ func TestNewProjectCopiesCollaborationFiles(t *testing.T) {
 		"Implement registration and login",
 		"实现注册登录",
 		"PM -> Architect -> Developer -> Reviewer",
+		"Frontend workflow",
+		"前端工作流",
 	} {
 		if !strings.Contains(string(guide), snippet) {
 			t.Fatalf("docs/ai-collaboration.md missing %q:\n%s", snippet, string(guide))
@@ -144,6 +149,104 @@ func TestNewProjectCopiesCollaborationFiles(t *testing.T) {
 	}
 	if strings.Contains(string(config), "host=127.0.0.1 user=postgres") {
 		t.Fatalf("manifest/config.yaml should use PostgreSQL URL DSN, not key/value DSN:\n%s", string(config))
+	}
+
+	collaborationConfig, err := os.ReadFile(filepath.Join(projectRoot, "docs/collaboration-config.yaml"))
+	if err != nil {
+		t.Fatalf("read docs/collaboration-config.yaml: %v", err)
+	}
+	for _, snippet := range []string{
+		"# Collaboration Config / 协作配置",
+		"enabled: false",
+		"styleSkill: \"\"",
+		"是否启用前端 Agent 工作流",
+	} {
+		if !strings.Contains(string(collaborationConfig), snippet) {
+			t.Fatalf("docs/collaboration-config.yaml missing %q:\n%s", snippet, string(collaborationConfig))
+		}
+	}
+}
+
+func TestNewProjectWritesFrontendCollaborationConfig(t *testing.T) {
+	root := t.TempDir()
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("get working directory: %v", err)
+	}
+	t.Cleanup(func() {
+		_ = os.Chdir(wd)
+	})
+	if err := os.Chdir(root); err != nil {
+		t.Fatalf("change directory: %v", err)
+	}
+
+	enabled := true
+	var stdout bytes.Buffer
+	if err := NewProject(ProjectNewOptions{
+		ProjectName:        "frontendapp",
+		ModulePath:         "example.com/frontendapp",
+		Frontend:           &enabled,
+		FrontendStyleSkill: "my-ui-style",
+		Stdout:             &stdout,
+	}); err != nil {
+		t.Fatalf("new project: %v", err)
+	}
+
+	collaborationConfig, err := os.ReadFile(filepath.Join(root, "frontendapp", "docs/collaboration-config.yaml"))
+	if err != nil {
+		t.Fatalf("read docs/collaboration-config.yaml: %v", err)
+	}
+	for _, snippet := range []string{
+		"enabled: true",
+		"styleSkill: \"my-ui-style\"",
+	} {
+		if !strings.Contains(string(collaborationConfig), snippet) {
+			t.Fatalf("docs/collaboration-config.yaml missing %q:\n%s", snippet, string(collaborationConfig))
+		}
+	}
+	if !strings.Contains(stdout.String(), "Frontend workflow is enabled") {
+		t.Fatalf("stdout missing frontend enabled message:\n%s", stdout.String())
+	}
+}
+
+func TestNewProjectPromptsForFrontendWorkflow(t *testing.T) {
+	root := t.TempDir()
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("get working directory: %v", err)
+	}
+	t.Cleanup(func() {
+		_ = os.Chdir(wd)
+	})
+	if err := os.Chdir(root); err != nil {
+		t.Fatalf("change directory: %v", err)
+	}
+
+	var stdout bytes.Buffer
+	if err := NewProject(ProjectNewOptions{
+		ProjectName: "promptapp",
+		ModulePath:  "example.com/promptapp",
+		Interactive: true,
+		Stdin:       strings.NewReader("y\nprompt-style\n"),
+		Stdout:      &stdout,
+	}); err != nil {
+		t.Fatalf("new project: %v", err)
+	}
+
+	collaborationConfig, err := os.ReadFile(filepath.Join(root, "promptapp", "docs/collaboration-config.yaml"))
+	if err != nil {
+		t.Fatalf("read docs/collaboration-config.yaml: %v", err)
+	}
+	if !strings.Contains(string(collaborationConfig), "enabled: true") || !strings.Contains(string(collaborationConfig), "styleSkill: \"prompt-style\"") {
+		t.Fatalf("unexpected docs/collaboration-config.yaml:\n%s", string(collaborationConfig))
+	}
+	for _, snippet := range []string{
+		"Enable frontend agent workflow? / 是否启用前端 Agent 工作流？",
+		"Frontend style skill name, leave empty to skip / 前端风格 skill 名称，可留空跳过",
+	} {
+		if !strings.Contains(stdout.String(), snippet) {
+			t.Fatalf("stdout missing %q:\n%s", snippet, stdout.String())
+		}
 	}
 }
 

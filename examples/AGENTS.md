@@ -42,11 +42,22 @@ Before starting work, every role must read:
 1. `docs/handoff.md`
 2. `docs/tasks.md`
 3. `docs/decision-log.md`
-4. The role-specific source of truth it is about to change:
+4. `docs/collaboration-config.yaml`
+5. The role-specific source of truth it is about to change:
    - product work: `docs/product/PRD.md`
    - technical design: `docs/tech/ARCHITECTURE.md`
    - review output: `docs/review/`
    - QA output: `docs/qa/`
+
+## Frontend Workflow
+
+Frontend workflow is opt-in and disabled by default.
+
+Read `docs/collaboration-config.yaml` before deciding whether to use frontend agents. When `frontend.enabled` is false, do not create, modify, or review frontend files unless the user explicitly requests frontend work in the current task.
+
+If `frontend.styleSkill` is set, use that style skill as the default frontend style. A style skill explicitly named by the user in the current request takes priority over the config file.
+
+前端工作流默认关闭。在决定是否使用前端 agent 前，先读取 `docs/collaboration-config.yaml`。当 `frontend.enabled` 为 false 时，除非用户明确要求前端工作，否则不要创建、修改或评审前端文件。
 
 ## Collaboration Rules
 

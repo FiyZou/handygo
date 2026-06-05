@@ -14,8 +14,18 @@ Always read these files first:
 2. `docs/handoff.md`
 3. `docs/tasks.md`
 4. `docs/decision-log.md`
+5. `docs/collaboration-config.yaml`
 
 If the handoff contains unfinished work, resume that work before creating a new plan. If the user explicitly changes the goal, update the handoff and tasks to reflect the new goal.
+
+## Frontend Decision
+
+Frontend work is opt-in.
+
+- Use frontend workflow when the user explicitly requests UI, pages, frontend routes, frontend project setup, or when `docs/collaboration-config.yaml` has `frontend.enabled: true` and the task naturally includes frontend work.
+- Do not create or modify frontend files when `frontend.enabled: false` unless the user explicitly asks for frontend work.
+- If `frontend.styleSkill` is not empty, use it as the default frontend style skill.
+- If the user names a style skill in the current request, use the user-specified skill instead of the config default.
 
 ## Role Chain
 
