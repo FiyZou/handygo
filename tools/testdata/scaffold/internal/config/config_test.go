@@ -29,12 +29,55 @@ func TestNormalizeAndValidateAllowsLocalPlaceholderJWTSecret(t *testing.T) {
 	cfg.App.Name = ""
 	cfg.Server.Mode = "debug"
 	cfg.Auth.JWTSecret = placeholderJWTSecret
+	cfg.Cache.Enabled = false
 
 	if err := cfg.NormalizeAndValidate(); err != nil {
 		t.Fatalf("validate config: %v", err)
 	}
 	if cfg.App.Name != "handygo-web" {
 		t.Fatalf("app name = %q", cfg.App.Name)
+	}
+}
+
+func TestNormalizeAndValidateAllowsOptionalCache(t *testing.T) {
+	cfg := validConfig()
+	cfg.Cache.Enabled = true
+	cfg.Cache.Redis.Addr = "127.0.0.1:6379"
+
+	if err := cfg.NormalizeAndValidate(); err != nil {
+		t.Fatalf("validate config: %v", err)
+	}
+}
+
+func TestNormalizeAndValidateRequiresCacheWhenAsynqEnabled(t *testing.T) {
+	cfg := validConfig()
+	cfg.Asynq.Enabled = true
+	cfg.Cache.Enabled = false
+
+	if err := cfg.NormalizeAndValidate(); err == nil {
+		t.Fatal("expected cache required error")
+	}
+}
+
+func TestNormalizeAndValidateRejectsAsynqWithoutRedisAddr(t *testing.T) {
+	cfg := validConfig()
+	cfg.Asynq.Enabled = true
+	cfg.Cache.Enabled = true
+	cfg.Cache.Redis.Addr = ""
+
+	if err := cfg.NormalizeAndValidate(); err == nil {
+		t.Fatal("expected redis addr error")
+	}
+}
+
+func TestNormalizeAndValidateAllowsAsynqWithCache(t *testing.T) {
+	cfg := validConfig()
+	cfg.Asynq.Enabled = true
+	cfg.Cache.Enabled = true
+	cfg.Cache.Redis.Addr = "127.0.0.1:6379"
+
+	if err := cfg.NormalizeAndValidate(); err != nil {
+		t.Fatalf("validate config: %v", err)
 	}
 }
 

@@ -12,20 +12,49 @@ server:
 logger:
   level: info
   mode: prod
+  # encoding options: json, console
   encoding: json
+  timeFormat: "2006-01-02 15:04:05"
   outputPaths:
     - stdout
   errorOutputPaths:
     - stderr
+  fileOutputPath: logs/app.log
+  errorFileOutputPath: logs/error.log
+  rotation:
+    enabled: true
+    maxSizeMB: 100
+    maxAgeDays: 30
+    maxBackups: 10
+    localTime: true
+    compress: true
 
 database:
   name: database
+  # Default SQLite configuration.
   driver: sqlite
   dsn: file:handygo-example.db?cache=shared
+  # MySQL example:
+  # driver: mysql
+  # dsn: "mysql://user:password@127.0.0.1:3306/handygo?charset=utf8mb4&parseTime=True&loc=Local"
+  # PostgreSQL example:
+  # driver: postgres
+  # dsn: "postgres://postgres:postgres@127.0.0.1:5432/handygo?sslmode=disable&TimeZone=Asia/Shanghai"
   maxIdleConns: 2
   maxOpenConns: 10
   connMaxLifetime: 1h
   logLevel: warn
+
+cache:
+  enabled: false
+  redis:
+    name: redis
+    addr: "127.0.0.1:6379"
+    db: 0
+    dialTimeout: 5s
+    readTimeout: 3s
+    writeTimeout: 3s
+    poolSize: 10
 
 auth:
   jwtSecret: ""
@@ -46,9 +75,6 @@ asynq:
   enabled: false
   client:
     name: asynq-client
-    redis:
-      addr: "127.0.0.1:6379"
-      db: 0
   server:
     name: asynq-server
     concurrency: 10
@@ -56,12 +82,6 @@ asynq:
       critical: 6
       default: 3
       low: 1
-    redis:
-      addr: "127.0.0.1:6379"
-      db: 0
   scheduler:
     name: asynq-scheduler
     location: Asia/Shanghai
-    redis:
-      addr: "127.0.0.1:6379"
-      db: 0

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/FiyZou/handygo/app"
+	"github.com/FiyZou/handygo/cache"
 	exampleconfig "github.com/FiyZou/handygo/examples/internal/config"
 	"github.com/FiyZou/handygo/examples/internal/tasks"
 	"github.com/FiyZou/handygo/queue"
@@ -34,15 +35,22 @@ func newLocalWorkers(cfg exampleconfig.AppConfig, zapLogger *zap.Logger) (*worke
 }
 
 func registerAsynq(application *app.App, cfg exampleconfig.AppConfig, zapLogger *zap.Logger) error {
-	client := queue.NewClient(cfg.Asynq.Client)
-	server := queue.NewServer(cfg.Asynq.Server)
+	clientCfg := cfg.Asynq.Client
+	clientCfg.Redis = asynqRedis(cfg.Cache.Redis)
+	serverCfg := cfg.Asynq.Server
+	serverCfg.Redis = asynqRedis(cfg.Cache.Redis)
+	schedulerCfg := cfg.Asynq.Scheduler
+	schedulerCfg.Redis = asynqRedis(cfg.Cache.Redis)
+
+	client := queue.NewClient(clientCfg)
+	server := queue.NewServer(serverCfg)
 	tasks.Register(server, zapLogger)
 
 	task, err := tasks.NewUserReportTask(1)
 	if err != nil {
 		return fmt.Errorf("new user report task: %w", err)
 	}
-	asynqScheduler, err := queue.NewScheduler(cfg.Asynq.Scheduler)
+	asynqScheduler, err := queue.NewScheduler(schedulerCfg)
 	if err != nil {
 		return fmt.Errorf("new asynq scheduler: %w", err)
 	}
@@ -52,4 +60,13 @@ func registerAsynq(application *app.App, cfg exampleconfig.AppConfig, zapLogger 
 
 	application.Register(client, server, asynqScheduler)
 	return nil
+}
+
+func asynqRedis(cfg cache.Config) queue.RedisConfig {
+	return queue.RedisConfig{
+		Addr:     cfg.Addr,
+		Username: cfg.Username,
+		Password: cfg.Password,
+		DB:       cfg.DB,
+	}
 }

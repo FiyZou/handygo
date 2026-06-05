@@ -113,7 +113,49 @@ The scaffold demonstrates HandyGo's background infrastructure:
 
 - Local worker pool and local scheduler are enabled by default.
 - Asynq client, worker server, and scheduler are configured under `asynq` and disabled by default.
-- Set `asynq.enabled` to `true` and provide Redis settings to enable distributed background tasks.
+- Set both `cache.enabled` and `asynq.enabled` to `true` to enable distributed background tasks. Asynq reuses `cache.redis` for its client, server, and scheduler.
+
+## Redis
+
+Redis cache is optional and disabled by default:
+
+```yaml
+cache:
+  enabled: false
+```
+
+Configure `cache.redis` once for both cache usage and Asynq. `cache.enabled` declares that Redis is available; `asynq.enabled` requires `cache.enabled: true`.
+
+## Logging
+
+The default production logger uses JSON output, formatted timestamps, and rotating log files:
+
+```yaml
+logger:
+  encoding: json
+  timeFormat: "2006-01-02 15:04:05"
+  fileOutputPath: logs/app.log
+  errorFileOutputPath: logs/error.log
+  rotation:
+    enabled: true
+    maxSizeMB: 100
+    maxAgeDays: 30
+    maxBackups: 10
+```
+
+`encoding` supports `json` and `console`. Log rotation uses size, age, backup count, local time, and compression settings. The scaffold does not include external log shipping.
+
+## Database Options
+
+SQLite is the default database:
+
+```yaml
+database:
+  driver: sqlite
+  dsn: file:handygo-example.db?cache=shared
+```
+
+`manifest/config.yaml` and `manifest/config.local.yaml` include commented MySQL and PostgreSQL examples next to the default SQLite settings. Uncomment one database driver and DSN pair when switching databases.
 
 ## Run
 

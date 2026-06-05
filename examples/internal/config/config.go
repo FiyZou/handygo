@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/FiyZou/handygo/cache"
 	"github.com/FiyZou/handygo/database"
 	handylogger "github.com/FiyZou/handygo/logger"
 	"github.com/FiyZou/handygo/queue"
@@ -18,6 +19,7 @@ type AppConfig struct {
 	Server   server.Config      `mapstructure:"server"`
 	Logger   handylogger.Config `mapstructure:"logger"`
 	Database database.Config    `mapstructure:"database"`
+	Cache    Cache              `mapstructure:"cache"`
 	Auth     Auth               `mapstructure:"auth"`
 	Worker   Worker             `mapstructure:"worker"`
 	Asynq    Asynq              `mapstructure:"asynq"`
@@ -36,6 +38,11 @@ type Auth struct {
 type Worker struct {
 	Pool      workerpool.Config `mapstructure:"pool"`
 	Scheduler scheduler.Config  `mapstructure:"scheduler"`
+}
+
+type Cache struct {
+	Enabled bool         `mapstructure:"enabled"`
+	Redis   cache.Config `mapstructure:"redis"`
 }
 
 type Asynq struct {
@@ -62,6 +69,12 @@ func (cfg *AppConfig) NormalizeAndValidate() error {
 	}
 	if cfg.Auth.PasswordCost <= 0 {
 		return errors.New("auth.passwordCost must be greater than zero")
+	}
+	if cfg.Asynq.Enabled && !cfg.Cache.Enabled {
+		return errors.New("cache.enabled must be true when asynq.enabled is true")
+	}
+	if cfg.Asynq.Enabled && strings.TrimSpace(cfg.Cache.Redis.Addr) == "" {
+		return errors.New("cache.redis.addr cannot be empty when asynq.enabled is true")
 	}
 	return nil
 }

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/FiyZou/handygo/app"
+	"github.com/FiyZou/handygo/cache"
 	"github.com/FiyZou/handygo/database"
 	exampleconfig "github.com/FiyZou/handygo/examples/internal/config"
 	"github.com/FiyZou/handygo/examples/internal/repository"
@@ -34,9 +35,10 @@ func New(cfg exampleconfig.AppConfig) (*app.App, error) {
 	if err != nil {
 		return nil, err
 	}
+	redisCache := newCache(cfg)
 
 	services := newServices(cfg, db)
-	healthChecker := newHealth(db)
+	healthChecker := newHealth(db, redisCache)
 	httpServer := newHTTPServer(cfg, zapLogger, healthChecker, services)
 	localPool, localScheduler, err := newLocalWorkers(cfg, zapLogger)
 	if err != nil {
@@ -45,6 +47,9 @@ func New(cfg exampleconfig.AppConfig) (*app.App, error) {
 
 	application := app.New(cfg.App.Name, app.WithLogger(zapLogger.Sugar()))
 	application.Register(db, localPool, localScheduler, httpServer)
+	if redisCache != nil {
+		application.Register(redisCache)
+	}
 	if cfg.Asynq.Enabled {
 		if err := registerAsynq(application, cfg, zapLogger); err != nil {
 			return nil, err
@@ -73,6 +78,13 @@ func newDatabase(cfg exampleconfig.AppConfig) (*database.Database, error) {
 	return db, nil
 }
 
+func newCache(cfg exampleconfig.AppConfig) *cache.Cache {
+	if !cfg.Cache.Enabled {
+		return nil
+	}
+	return cache.New(cfg.Cache.Redis)
+}
+
 func newServices(cfg exampleconfig.AppConfig, db *database.Database) services {
 	userRepo := repository.NewUserRepository(db.DB())
 	rbacRepo := repository.NewRBACRepository(db.DB())
@@ -83,9 +95,12 @@ func newServices(cfg exampleconfig.AppConfig, db *database.Database) services {
 	}
 }
 
-func newHealth(db *database.Database) *health.Health {
+func newHealth(db *database.Database, redisCache *cache.Cache) *health.Health {
 	healthChecker := health.New(defaultHealthTimeout)
 	healthChecker.Register(health.NewCheck("database", db.Start))
+	if redisCache != nil {
+		healthChecker.Register(health.NewCheck("redis", redisCache.Start))
+	}
 	return healthChecker
 }
 

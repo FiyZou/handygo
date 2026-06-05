@@ -109,6 +109,42 @@ func TestNewProjectCopiesCollaborationFiles(t *testing.T) {
 			t.Fatalf("docs/ai-collaboration.md missing %q:\n%s", snippet, string(guide))
 		}
 	}
+
+	config, err := os.ReadFile(filepath.Join(projectRoot, "manifest/config.yaml"))
+	if err != nil {
+		t.Fatalf("read manifest/config.yaml: %v", err)
+	}
+	for _, snippet := range []string{
+		"cache:",
+		"enabled: false",
+		"timeFormat: \"2006-01-02 15:04:05\"",
+		"fileOutputPath: logs/app.log",
+		"errorFileOutputPath: logs/error.log",
+		"rotation:",
+		"maxSizeMB: 100",
+		"maxAgeDays: 30",
+		"# MySQL example:",
+		"mysql://user:password@127.0.0.1:3306/handygo",
+		"# PostgreSQL example:",
+		"postgres://postgres:postgres@127.0.0.1:5432/handygo",
+		"driver: sqlite",
+	} {
+		if !strings.Contains(string(config), snippet) {
+			t.Fatalf("manifest/config.yaml missing %q:\n%s", snippet, string(config))
+		}
+	}
+	for _, snippet := range []string{
+		"client:\n    name: asynq-client\n    redis:",
+		"server:\n    name: asynq-server\n    concurrency: 10\n    queues:\n      critical: 6\n      default: 3\n      low: 1\n    redis:",
+		"scheduler:\n    name: asynq-scheduler\n    location: Asia/Shanghai\n    redis:",
+	} {
+		if strings.Contains(string(config), snippet) {
+			t.Fatalf("manifest/config.yaml should not contain separate asynq redis block %q:\n%s", snippet, string(config))
+		}
+	}
+	if strings.Contains(string(config), "host=127.0.0.1 user=postgres") {
+		t.Fatalf("manifest/config.yaml should use PostgreSQL URL DSN, not key/value DSN:\n%s", string(config))
+	}
 }
 
 func captureStdout(t *testing.T, fn func()) string {
